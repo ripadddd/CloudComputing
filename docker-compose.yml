@@ -1,0 +1,50 @@
+# ============================================================
+# Nama : Muhammad Rizki Padillah
+# NPM  : 2410010252
+# Tugas: Tugas 2 Cloud - docker-compose.yml
+# ============================================================
+
+# Versi format docker-compose
+version: '3.8'
+
+services:
+
+  # ── Service aplikasi PHP ──────────────────────────────────
+  php-app:
+    # Nama container yang akan muncul di "docker ps"
+    container_name: rizki-todo-app
+
+    # Build image dari Dockerfile yang ada di folder ini (.)
+    build:
+      context: .         # folder yang dijadikan konteks build
+      dockerfile: Dockerfile  # nama Dockerfile yang dipakai
+
+    # Mapping port: port_host:port_container
+    # Akses lewat browser: http://localhost:8080
+    # Port 8080 di laptop → diteruskan ke port 80 di dalam container
+    ports:
+      - "8080:80"
+
+    # Volume: sinkronisasi folder lokal dengan folder di container
+    # Perubahan pada folder app/ langsung terlihat tanpa rebuild
+    volumes:
+      - ./app:/var/www/html
+
+    # Restart policy: container akan otomatis restart jika crash
+    # "unless-stopped" = restart terus kecuali sengaja di-stop
+    restart: unless-stopped
+
+    # Environment variable (bisa ditambah jika perlu)
+    environment:
+      - APACHE_LOG_DIR=/var/log/apache2
+
+    # Nama network yang digunakan
+    networks:
+      - rizki-network
+
+# ── Definisi network ───────────────────────────────────────
+networks:
+  rizki-network:
+    driver: bridge
+    # Network bridge memungkinkan container berkomunikasi satu sama lain
+    # dan terhubung ke internet melalui host
